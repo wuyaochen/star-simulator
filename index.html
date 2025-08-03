@@ -6,8 +6,19 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>新楓之谷星力強化模擬器 v6</title>
+  <title>新楓之谷星力強化模擬器 v7</title>
   <style>
+    .star-icon {
+      font-size: 2.2em !important;
+      color: #ffd700 !important;
+      cursor: pointer;
+      margin: 0 2px;
+      transition: color 0.2s;
+      user-select: none;
+    }
+    .star-icon.inactive {
+      color: #bbb !important;
+    }
     body {
       font-family: "Microsoft JhengHei", Arial, sans-serif;
       background: #f5f6fa;
@@ -408,7 +419,7 @@
     const historyPerPage = 10;
     let successCount = 0;
 
-    // 星星選擇器渲染
+    // 星星選擇器渲染（可點擊設定星力）
     function renderStarSelector() {
       const starDiv = document.getElementById('starSelector');
       let max = maxStar;
@@ -419,12 +430,25 @@
       if (currentLevel === "130") starCount = 20;
       else starCount = max + 1;
       for (let i = 1; i <= starCount; i++) {
-        html += `<span class="star-icon" data-star="${i}" style="font-size:1.7em;cursor:pointer;color:${i <= currentStar ? '#ffd700' : '#bbb'};margin:0 1px;">★</span>`;
+        html += `<span class="star-icon${i <= currentStar ? '' : ' inactive'}" data-star="${i}">★</span>`;
         if (i % 5 === 0 && i % 15 !== 0 && i !== starCount) html += ' ';
         if (i % 15 === 0 && i !== starCount) html += '<br>';
       }
       starDiv.innerHTML = html;
-      // 移除點擊事件，僅作視覺顯示
+      // 新增：點擊星星可直接設定星力
+      Array.from(starDiv.querySelectorAll('.star-icon')).forEach(function(starElem) {
+        starElem.addEventListener('click', function() {
+          const val = parseInt(this.getAttribute('data-star'), 10);
+          currentStar = val;
+          updateUI();
+          // 讓 input 欄位同步顯示並 focus
+          const input = document.getElementById('startStarInput');
+          if (input) {
+            input.value = val;
+            input.focus();
+          }
+        });
+      });
     }
 
     function updateUI() {
