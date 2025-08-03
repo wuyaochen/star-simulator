@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<!-- 新增：全站主選單 -->
+<nav style="width:100%;background:#2d8cf0;color:#fff;padding:10px 0;text-align:center;font-size:1.15rem;font-weight:bold;letter-spacing:2px;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:8px;">
+  新楓之谷星力強化模擬器｜強化模擬｜強化歷程  
+</nav>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>新楓之谷星力強化模擬器 v6</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", Arial, sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      font-size: 1.18rem;
+    }
+    .container {
+      background: #fff;
+      margin-top: 40px;
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 48px 64px 36px 64px;
+      min-width: 600px;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .tab-bar {
+      display: flex;
+      width: 100%;
+      margin-bottom: 18px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 1.08rem;
+      color: #888;
+      background: #e3e7ed;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      margin-right: 2px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tab:last-child { margin-right: 0; }
+    .tab.active {
+      background: #fff;
+      color: #2d8cf0;
+      border-bottom: 2px solid #2d8cf0;
+      z-index: 2;
+    }
+    .select-row {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .select-row label {
+      font-size: 1.08rem;
+      margin-right: 8px;
+      color: #2d8cf0;
+    }
+    .select-row select, .select-row input[type="number"] {
+      font-size: 1.08rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1.5px solid #2d8cf0;
+      background: #e3e7ed;
+      color: #2d8cf0;
+      outline: none;
+      margin-right: 8px;
+    }
+    .star-count {
+      font-size: 2.8rem;
+      font-weight: bold;
+      color: #2d8cf0;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+    }
+    .middle-row {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .equipment {
+      width: 160px;
+      height: 160px;
+      background: #e3e7ed;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.2rem;
+      color: #555;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .probability {
+      width: 260px;
+      background: #f0f7ff;
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 1.22rem;
+      color: #333;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .probability span {
+      margin-bottom: 6px;
+    }
+    .bottom-row {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.05rem;
+      color: #444;
+      padding: 0 2px;
+    }
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    button {
+      padding: 8px 24px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .enhance-btn {
+      background: #2d8cf0;
+      color: #fff;
+    }
+    .enhance-btn:disabled {
+      background: #bbb;
+      color: #eee;
+      cursor: not-allowed;
+    }
+    .enhance-btn:hover:enabled {
+      background: #1766b8;
+    }
+    .cancel-btn {
+      background: #e0e0e0;
+      color: #555;
+    }
+    .cancel-btn:hover {
+      background: #bdbdbd;
+    }
+    .batch-btn {
+      background: #ffb300;
+      color: #fff;
+      margin-left: 8px;
+    }
+    .batch-btn:hover:enabled {
+      background: #e09c00;
+    }
+    .log {
+      margin-top: 18px;
+      width: 100%;
+      min-height: 32px;
+      color: #d32f2f;
+      font-size: 1rem;
+      text-align: center;
+    }
+    .history-container {
+      width: 100%;
+      max-height: 320px;
+      overflow-y: auto;
+      background: #f0f7ff;
+      border: 1.5px solid #bfc9d6;
+      border-radius: 8px;
+      margin: 18px 0 0 0;
+      box-sizing: border-box;
+      padding: 12px 18px;
+      color: #2d8cf0;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      min-height: 120px;
+    }
+    .history-pagination {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+      gap: 16px;
+    }
+    .history-pagination button {
+      background: #e3e7ed;
+      color: #2d8cf0;
+      border: 1.5px solid #bfc9d6;
+      border-radius: 6px;
+      font-size: 1.05rem;
+      padding: 4px 18px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .history-pagination button:disabled {
+      background: #bbb;
+      color: #888;
+      cursor: not-allowed;
+    }
+    .batch-result {
+      width: 100%;
+      margin-top: 24px;
+      background: #f0f7ff;
+      border-radius: 8px;
+      padding: 18px 18px 10px 18px;
+      color: #2d8cf0;
+      font-size: 1.08rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: none;
+    }
+    .batch-result table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 1.05rem;
+      background: #fff;
+    }
+    .batch-result th, .batch-result td {
+      border: 1px solid #bfc9d6;
+      padding: 6px 10px;
+      text-align: center;
+    }
+    .batch-result th {
+      background: #e3e7ed;
+      color: #2176c7;
+    }
+    .hidden {
+      display: none !important;
+    }
+    @media (max-width: 600px) {
+      .container { width: 99vw; min-width: 0; }
+      .history-container { padding-left: 4vw; padding-right: 4vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="tab-bar">
+      <button class="tab active" id="tabEnhance">強化模擬</button>
+      <button class="tab" id="tabHistory">強化歷程</button>
+    </div>
+    <div id="enhancePage">
+      <div class="select-row">
+        <label for="equipLevel">裝備等級：</label>
+        <select id="equipLevel">
+          <option value="130">130</option>
+          <option value="140">140</option>
+          <option value="150" selected>150</option>
+          <option value="160">160</option>
+          <option value="200">200</option>
+          <option value="250">250</option>
+        </select>
+        <label for="startStar">起始星力：</label>
+        <input type="number" id="startStarInput" min="0" max="30" value="0" style="width:60px;">
+      </div>
+      <div class="middle-row" style="flex-direction: column; align-items: center;">
+        <div id="starSelector" style="margin-bottom: 8px; text-align: center;"></div>
+        <div class="star-count" id="starCount" style="margin-bottom: 8px;">星力：0</div>
+        <div class="equipment" id="equipment" style="margin-bottom: 8px;">👑</div>
+        <div class="probability" id="probability">
+          <span id="probStar">目前星力：0</span>
+          <span id="probSuccess">成功機率：95%</span>
+          <span id="probBoom">破壞機率：0%</span>
+          <span id="probKeep">維持機率：5%</span>
+        </div>
+      </div>
+      <div class="bottom-row">
+        <div class="info-row">
+          <span>所需楓幣：</span>
+          <span id="cost">94,800</span>
+        </div>
+        <div class="info-row">
+          <span>總消耗楓幣：</span>
+          <span id="totalCost">0</span>
+        </div>
+        <div class="button-row">
+          <button class="enhance-btn" id="enhanceBtn">強化</button>
+          <button class="cancel-btn" id="cancelBtn">取消</button>
+        </div>
+      </div>
+      <div class="log" id="log"></div>
+    </div>
+    <div id="historyPage" class="hidden">
+      <div class="history-container" id="historyContainer">
+        <!-- 強化歷程顯示 -->
+      </div>
+      <div class="history-pagination">
+        <button id="prevPageBtn">上一頁</button>
+        <span id="pageInfo"></span>
+        <button id="nextPageBtn">下一頁</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 分頁切換功能
+    document.getElementById('tabEnhance').addEventListener('click', function() {
+      document.getElementById('tabEnhance').classList.add('active');
+      document.getElementById('tabHistory').classList.remove('active');
+      document.getElementById('enhancePage').style.display = '';
+      document.getElementById('historyPage').classList.add('hidden');
+    });
+    document.getElementById('tabHistory').addEventListener('click', function() {
+      document.getElementById('tabEnhance').classList.remove('active');
+      document.getElementById('tabHistory').classList.add('active');
+      document.getElementById('enhancePage').style.display = 'none';
+      document.getElementById('historyPage').classList.remove('hidden');
+    });
+    // 星力強化機率表（0~29星，index=星力）
+    // 格式：{ success: 成功率, boom: 破壞率, keep: 0.05 }
+    const starProbTable = [
+      {success: 0.95, boom: 0.00, keep: 0.05},   // 0>1
+      {success: 0.90, boom: 0.00, keep: 0.10},   // 1>2
+      {success: 0.85, boom: 0.00, keep: 0.15},   // 2>3
+      {success: 0.85, boom: 0.00, keep: 0.15},   // 3>4
+      {success: 0.80, boom: 0.00, keep: 0.20},   // 4>5
+      {success: 0.75, boom: 0.00, keep: 0.25},   // 5>6
+      {success: 0.70, boom: 0.00, keep: 0.30},   // 6>7
+      {success: 0.65, boom: 0.00, keep: 0.35},   // 7>8
+      {success: 0.60, boom: 0.00, keep: 0.40},   // 8>9
+      {success: 0.55, boom: 0.00, keep: 0.45},   // 9>10
+      {success: 0.50, boom: 0.00, keep: 0.50},   // 10>11
+      {success: 0.45, boom: 0.00, keep: 0.55},   // 11>12
+      {success: 0.40, boom: 0.00, keep: 0.60},   // 12>13
+      {success: 0.35, boom: 0.00, keep: 0.65},   // 13>14
+      {success: 0.30, boom: 0.00, keep: 0.70},   // 14>15
+      {success: 0.30, boom: 0.021, keep: 0.679}, // 15>16
+      {success: 0.30, boom: 0.021, keep: 0.679}, // 16>17
+      {success: 0.15, boom: 0.068, keep: 0.782}, // 17>18
+      {success: 0.12, boom: 0.082, keep: 0.798}, // 18>19
+      {success: 0.10, boom: 0.09, keep: 0.81},   // 19>20
+      {success: 0.30, boom: 0.105, keep: 0.595}, // 20>21
+      {success: 0.20, boom: 0.115, keep: 0.685}, // 21>22
+      {success: 0.175, boom: 0.1225, keep: 0.7025}, // 22>23
+      {success: 0.085, boom: 0.18, keep: 0.735}, // 23>24
+      {success: 0.085, boom: 0.18, keep: 0.735}, // 24>25
+      {success: 0.08, boom: 0.18, keep: 0.74},   // 25>26
+      {success: 0.07, boom: 0.186, keep: 0.744}, // 26>27
+      {success: 0.05, boom: 0.19, keep: 0.76},   // 27>28
+      {success: 0.03, boom: 0.194, keep: 0.776}, // 28>29
+      {success: 0.01, boom: 0.198, keep: 0.792}  // 29>30
+    ];
+
+    // 楓幣消耗表（0~29星，index=星力），130等級21星以上為null
+    const equipCostTable = {
+      "130": [
+        62000,123100,184100,245100,306100,367200,428200,489200,550300,611300,
+        2495300,5738100,10449700,17398100,30754400,19586000,23069100,26918600,31149300,35776100,
+        null,null,null,null,null,null,null,null,null,null
+      ],
+      "140": [
+        77200,153400,229700,305900,382100,458300,534600,610800,687000,763200,
+        3116400,7166500,13051200,21729500,38411200,39138900,48020200,61127200,172905500,297882700,
+        50974700,92474100,65166700,73102200,81620200,90737500,100471000,110837000,121851900,133531800
+      ],
+      "150": [
+        94800,188500,282300,376000,469800,563500,657300,751000,844800,938500,
+        3832800,8814200,16052200,26726100,47243900,48139000,59062500,75183500,212666000,366382500,
+        62696400,113738800,80152000,89912300,100389000,111603000,123574700,136324400,149872300,164238100
+      ],
+      "160": [
+        114800,228600,342300,456100,569900,683700,797400,911200,1025000,1138800,
+        4651300,10697000,19481200,32435400,57336400,58422700,71679800,91244700,258097500,444652400,
+        76090000,138036600,97274600,109120000,121834900,135444400,149973700,165447100,181889200,199324000
+      ],
+      "200": [
+        223200,445400,667700,889900,1112100,1334300,1556600,1778800,2001000,2223200,
+        9083700,20891500,38048200,63349500,111984100,114105800,139998700,178211400,504095800,868460800,
+        148612400,269601800,189988600,213124000,237957700,264539000,292916400,323138000,355251400,389303700
+      ],
+      "250": [
+        435000,869100,1303100,1737100,2171100,2605200,3039200,3473200,3907300,4341300,
+        17740600,40802800,74312000,123728500,218718100,222861900,273434000,348068200,984561100,1696211500,
+        387009800,438804400,494760300,555008800,619680000,688902000,762801400,841503600,925132300,1013810000
+      ]
+    };
+
+    const minStar = 0;
+    const maxStar = 29;
+    let currentStar = 0;
+    let totalCost = 0;
+    let currentLevel = "150";
+    let history = [];
+    let historyPage = 1;
+    const historyPerPage = 10;
+    let successCount = 0;
+
+    // 星星選擇器渲染
+    function renderStarSelector() {
+      const starDiv = document.getElementById('starSelector');
+      let max = maxStar;
+      if (currentLevel === "130") max = 20;
+      let html = '';
+      // 130等級最多20星(1~20)，其餘最多30星(1~30)
+      let starCount = max;
+      if (currentLevel === "130") starCount = 20;
+      else starCount = max + 1;
+      for (let i = 1; i <= starCount; i++) {
+        html += `<span class="star-icon" data-star="${i}" style="font-size:1.7em;cursor:pointer;color:${i <= currentStar ? '#ffd700' : '#bbb'};margin:0 1px;">★</span>`;
+        if (i % 5 === 0 && i % 15 !== 0 && i !== starCount) html += ' ';
+        if (i % 15 === 0 && i !== starCount) html += '<br>';
+      }
+      starDiv.innerHTML = html;
+      // 移除點擊事件，僅作視覺顯示
+    }
+
+    function updateUI() {
+      renderStarSelector();
+      document.getElementById('starCount').textContent = `星力：${currentStar}`;
+      document.getElementById('equipment').innerHTML = getEquipImg(currentLevel);
+      document.getElementById('probStar').textContent = `目前星力：${currentStar}`;
+      const prob = starProbTable[currentStar] || {success: 0, boom: 0, keep: 0};
+      document.getElementById('probSuccess').textContent = `成功機率：${(prob.success*100).toFixed(1)}%`;
+      document.getElementById('probBoom').textContent = `破壞機率：${(prob.boom*100).toFixed(1)}%`;
+      document.getElementById('probKeep').textContent = `維持機率：${(prob.keep*100).toFixed(1)}%`;
+      const cost = equipCostTable[currentLevel][currentStar];
+      document.getElementById('cost').textContent = typeof cost === "number" ? cost.toLocaleString() : (cost == null ? "-" : cost);
+      document.getElementById('totalCost').textContent = totalCost.toLocaleString();
+      document.getElementById('log').textContent = '';
+      // 強化按鈕狀態
+      const enhanceBtn = document.getElementById('enhanceBtn');
+      let starCount = (currentLevel === "130") ? 20 : 30;
+      enhanceBtn.disabled = (currentStar < 0) || (currentStar > starCount) || (equipCostTable[currentLevel][currentStar] == null);
+      // 同步 input
+      const input = document.getElementById('startStarInput');
+      if (input && parseInt(input.value, 10) !== currentStar) input.value = currentStar;
+    }
+
+    function enhance() {
+      // 允許 0 星力時也可強化
+      let star = currentStar;
+      let max = (currentLevel === "130") ? 20 : 30;
+      if (isNaN(star) || star < 0 || star > max || equipCostTable[currentLevel][star] == null) {
+        document.getElementById('log').textContent = "無法強化此星數。";
+        return;
+      }
+      const prob = starProbTable[star];
+      const cost = equipCostTable[currentLevel][star];
+      if (!prob || !cost) {
+        document.getElementById('log').textContent = "無法強化此星數。";
+        return;
+      }
+      totalCost += cost;
+      const rand = Math.random();
+      let beforeStar = star;
+      let afterStar = star;
+      if (rand < prob.success) {
+        afterStar = star + 1;
+        currentStar = afterStar;
+        document.getElementById('log').textContent = "強化成功！";
+      } else if (rand < prob.success + prob.boom) {
+        afterStar = 0;
+        currentStar = 0;
+        document.getElementById('log').textContent = "裝備爆炸，星力歸0星！";
+      } else {
+        // afterStar = star; // 維持原星力
+        document.getElementById('log').textContent = "強化失敗，星力維持。";
+      }
+      let outcome = "";
+      if (afterStar === beforeStar + 1) {
+        outcome = "成功";
+      } else if (afterStar === 0 && beforeStar !== 0) {
+        outcome = "爆炸";
+      } else {
+        outcome = "維持";
+      }
+      let result = `[${beforeStar} → ${afterStar}星] 結果:${outcome} (花費: ${cost.toLocaleString()} 楓幣) (累積: ${totalCost.toLocaleString()} 楓幣)`;
+      history.unshift(result);
+      renderHistory();
+      updateUI();
+    }
+
+    function cancel() {
+      currentStar = 0;
+      totalCost = 0;
+      history = [];
+      historyPage = 1;
+      document.getElementById('log').textContent = "已重置。";
+      renderHistory();
+      updateUI();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('historyContainer');
+      const totalPages = Math.max(1, Math.ceil(history.length / historyPerPage));
+      if (historyPage > totalPages) historyPage = totalPages;
+      const start = (historyPage - 1) * historyPerPage;
+      const end = start + historyPerPage;
+      const pageHistory = history.slice(start, end);
+      container.innerHTML = pageHistory.length
+        ? pageHistory.map(h => `<div>${h}</div>`).join("")
+        : "<span style='color:#bfc9d6;'>尚無強化歷程</span>";
+      document.getElementById('pageInfo').textContent = `第 ${historyPage} / ${totalPages} 頁`;
+      document.getElementById('prevPageBtn').disabled = historyPage <= 1;
+      document.getElementById('nextPageBtn').disabled = historyPage >= totalPages;
+    }
+
+    function getEquipImg(level) {
+      switch(level) {
+        case "130": return '<img src="eqip130.png" alt="130裝備" style="height:2.2em;vertical-align:middle;">';
+        case "140": return '<img src="eqip140.png" alt="140裝備" style="height:2.2em;vertical-align:middle;">';
+        case "150": return '<img src="eqip150.png" alt="150裝備" style="height:2.2em;vertical-align:middle;">';
+        case "160": return '<img src="eqip160.png" alt="160裝備" style="height:2.2em;vertical-align:middle;">';
+        case "200": return '<img src="eqip200.png" alt="200裝備" style="height:2.2em;vertical-align:middle;">';
+        case "250": return '<img src="eqip250.png" alt="250裝備" style="height:2.2em;vertical-align:middle;">';
+        default: return '<img src="eqip150.png" alt="150裝備" style="height:2.2em;vertical-align:middle;">';
+      }
+    }
+
+    document.getElementById('enhanceBtn').addEventListener('click', enhance);
+    document.getElementById('cancelBtn').addEventListener('click', cancel);
+
+    document.getElementById('prevPageBtn').addEventListener('click', function() {
+      if (historyPage > 1) {
+        historyPage--;
+        renderHistory();
+      }
+    });
+    document.getElementById('nextPageBtn').addEventListener('click', function() {
+      const totalPages = Math.max(1, Math.ceil(history.length / historyPerPage));
+      if (historyPage < totalPages) {
+        historyPage++;
+        renderHistory();
+      }
+    });
+
+    document.getElementById('equipLevel').addEventListener('change', function(e) {
+      currentLevel = e.target.value;
+      // 根據等級調整 input 範圍
+      const input = document.getElementById('startStarInput');
+      if (currentLevel === "130") {
+        input.max = 20;
+        if (parseInt(input.value, 10) > 20) input.value = 20;
+      } else {
+        input.max = 30;
+        if (parseInt(input.value, 10) > 30) input.value = 30;
+      }
+      updateUI();
+    });
+    document.getElementById('startStarInput').addEventListener('input', function() {
+      let val = parseInt(this.value, 10);
+      if (isNaN(val)) val = 0;
+      let max = (currentLevel === "130") ? 20 : 30;
+      if (val < 0) val = 0;
+      if (val > max) val = max;
+      currentStar = val;
+      updateUI();
+    });
+
+    // 目標星力選單初始化
+    updateTargetStarOptions();
+
+    // 批次模擬功能
+
+    // 初始化
+    updateUI();
+    renderHistory();
+  </script>
+</body>
+</html>
